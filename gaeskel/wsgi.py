@@ -57,11 +57,14 @@ class WSGIApplication(object):
       raise TypeError('No routes match. Provide a fallback to avoid this.')
 
     # Extract the module and controller names from the route.
-    try:
+    list = kargs['controller'].split(':', 1)
+    if len(list) == 2:
       module_name, class_name = kargs['controller'].split(':', 1)
       del kargs['controller']
-    except:
-      raise TypeError('Controller is not set, or not formatted in the form "my.module.name:MyControllerName".')
+    else:
+        module_name = self.mapper.directory.replace('/', '.') + '.' + kargs['controller']
+        class_name = kargs['controller'][0].upper() + kargs['controller'][1:]
+        del kargs['controller']
 
     # Initialize matched controller from given module.
     try:
